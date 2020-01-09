@@ -4,7 +4,7 @@ Summary: GNU Emacs text editor
 Name: emacs
 Epoch: 1
 Version: 23.1
-Release: 21%{?dist}.1
+Release: 21%{?dist}.3
 License: GPLv3+
 URL: http://www.gnu.org/software/emacs/
 Group: Applications/Editors
@@ -43,6 +43,7 @@ Patch11: emacs-23.1-spacing.patch
 Patch12: emacs-23.1-defaultfont.patch
 Patch13: emacs-23.1-jis2004.patch
 Patch14: emacs-23.1-last-tty.patch
+Patch15: emacs-spellcheck.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: atk-devel, cairo-devel, desktop-file-utils, freetype-devel, fontconfig-devel, dbus-devel, giflib-devel, glibc-devel, gtk2-devel, libpng-devel
@@ -144,6 +145,7 @@ Emacs packages or see some elisp examples.
 %patch12 -p1 -b .defaultfont
 %patch13 -p1 -b .jis2004
 %patch14 -p1 -b .last-tty
+%patch15 -p1 -b .spellcheck
 
 # install rest of site-lisp files
 ( cd site-lisp
@@ -151,7 +153,7 @@ Emacs packages or see some elisp examples.
   # rpm-spec-mode can use compilation-mode
   patch < %PATCH1
   # fix po-auto-replace-revision-date nil
-  patch < %PATCH2 
+  patch < %PATCH2
   # rpm-spec-mode: added rpm-change-log-uses-utc variable
   patch < %PATCH3
   )
@@ -185,6 +187,10 @@ fi
 %endif
 
 %build
+# Remove an unpatched file as all files in the textmodes directory are
+# installed.
+rm lisp/textmodes/ispell.el.spellcheck
+
 export CFLAGS="-DMAIL_USE_LOCKF $RPM_OPT_FLAGS"
 
 #we patch configure.in so we have to do this
@@ -406,6 +412,14 @@ alternatives --install %{_bindir}/etags emacs.etags %{_bindir}/etags.emacs 80 \
 %dir %{_datadir}/emacs/%{version}
 
 %changelog
+* Mon Feb 27 2012 Karel Klíč <kklic@redhat.com> - 1:23.1-21.3
+- Remove an unpatched file as all files in the textmodes directory are installed
+  Related: #796053
+
+* Tue Feb 21 2012 Karel Klíč <kklic@redhat.com> - 1:23.1-21.2
+- Use hunspell as default ispell program
+  Resolves: #796053
+
 * Wed Dec 21 2011 Karel Klíč <kklic@redhat.com> - 1:23.1-21.1
 - Remove check for last terminal
   Resolves: #769673
