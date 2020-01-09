@@ -4,7 +4,7 @@ Summary: GNU Emacs text editor
 Name: emacs
 Epoch: 1
 Version: 23.1
-Release: 25%{?dist}
+Release: 28%{?dist}
 License: GPLv3+
 URL: http://www.gnu.org/software/emacs/
 Group: Applications/Editors
@@ -46,6 +46,8 @@ Patch14: emacs-23.1-last-tty.patch
 Patch15: emacs-spellcheck.patch
 Patch16: emacs-font.patch
 Patch17: emacs-xrender.patch
+Patch18: emacs-23.1-get-glyph-face.patch
+Patch19: emacs-23.1-memory-limits.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: atk-devel, cairo-devel, desktop-file-utils, freetype-devel, fontconfig-devel, dbus-devel, giflib-devel, glibc-devel, gtk2-devel, libpng-devel
@@ -150,6 +152,8 @@ Emacs packages or see some elisp examples.
 %patch15 -p1 -b .spellcheck
 %patch16 -p1 -b .font
 %patch17 -p1 -b .xrender
+%patch18 -p1 -b .glyph-face
+%patch19 -p1 -b .memory-limits
 
 # install rest of site-lisp files
 ( cd site-lisp
@@ -213,6 +217,8 @@ TOPDIR=${PWD}
 ${TOPDIR}/src/emacs %{bytecompargs} site-lisp/*.el
 
 %__make %{?_smp_mflags} -C lisp updates
+
+rm etc/emacs3.py
 
 # Create pkgconfig file
 cat > emacs.pc << EOF
@@ -416,6 +422,18 @@ alternatives --install %{_bindir}/etags emacs.etags %{_bindir}/etags.emacs 80 \
 %dir %{_datadir}/emacs/%{version}
 
 %changelog
+* Thu Nov 27 2014 Petr Hracek <phracek@redhat.com> - 1:23.1-28
+- Remove etc/emacs3.py script
+Related: #852516
+
+* Wed Nov 26 2014 Petr Hracek <phracek@redhat.com> - 1:23.1-27
+- Disable memory warnings
+Resolves: #852516
+
+* Wed Nov 26 2014 Petr Hracek <phracek@redhat.com> - 1:23.1-26
+- Segfault in get_glyph_face_and_encoding
+Resolves: #986989
+
 * Tue May 07 2013 Petr Hracek <phracek@redhat.com> - 1:23.1-25
 - Lucida Typewriter and Console fonts not selectable
 - Resolves: #678225
@@ -633,7 +651,7 @@ alternatives --install %{_bindir}/etags emacs.etags %{_bindir}/etags.emacs 80 \
 - fix pkgconfig path (from pkg-config to pkgconfig (Jonathan Underwood)
 - use macro instead of variable style for buildroot.
 
-* Mon Aug 28 2007 Chip Coldwell <coldwell@redhat.com> - 22.1-3
+* Tue Aug 28 2007 Chip Coldwell <coldwell@redhat.com> - 22.1-3
 - change group from Development to Utility
 
 * Mon Aug 13 2007 Chip Coldwell <coldwell@redhat.com> - 22.1-2
@@ -641,7 +659,7 @@ alternatives --install %{_bindir}/etags emacs.etags %{_bindir}/etags.emacs 80 \
 - glibc-open-macro.patch to deal with glibc turning "open" into a macro.
 - leave emacs info pages in default section (Resolves: bz199008) 
 
-* Fri Jun  6 2007 Chip Coldwell <coldwell@redhat.com> - 22.1-1
+* Wed Jun  6 2007 Chip Coldwell <coldwell@redhat.com> - 22.1-1
 - move alternatives install to posttrans scriptlet (Resolves: bz239745)
 - new release tarball from FSF (Resolves: bz245303)
 - new php-mode 1.2.0
@@ -973,7 +991,7 @@ alternatives --install %{_bindir}/etags emacs.etags %{_bindir}/etags.emacs 80 \
   and remove redundant next-line-add-newlines setting
 - update info_file list (Reuben Thomas,114729)
 
-* Wed Mar 16 2004 Mike A. Harris <mharris@redhat.com> 21.3-11
+* Tue Mar 16 2004 Mike A. Harris <mharris@redhat.com> 21.3-11
 - Removed bogus Requires: XFree86-libs that was added in 21.3-8, as rpm
   find-requires will automatically pick up the dependancies on any runtime
   libraries, and such hard coded requires is not X11 implementation
@@ -1294,7 +1312,7 @@ alternatives --install %{_bindir}/etags emacs.etags %{_bindir}/etags.emacs 80 \
 * Sat Jan 27 2001 Jakub Jelinek <jakub@redhat.com>
 - Preprocess Makefiles as if they were assembly, not C source.
 
-* Thu Jan 24 2001 Yukihiro Nakai <ynakai@redhat.com>
+* Wed Jan 24 2001 Yukihiro Nakai <ynakai@redhat.com>
 - Fix the fontset problem when creating a new frame.
 
 * Thu Jan 18 2001 Trond Eivind Glomsrød <teg@redhat.com>
