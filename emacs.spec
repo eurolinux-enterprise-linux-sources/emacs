@@ -4,7 +4,7 @@ Summary:        GNU Emacs text editor
 Name:           emacs
 Epoch:          1
 Version:        24.3
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/emacs/
 Group:          Applications/Editors
@@ -43,6 +43,8 @@ Patch25:        emacs-0010-src-unexelf.c-NEW_PROGRAM_H-Remove-unused-macro-Bug-.
 Patch26:        emacs-0011-ELF-unexec-align-section-header.patch
 # Fix for #1308518, upstreamed
 Patch27:        emacs-environment-crash.patch
+# https://git.savannah.gnu.org/cgit/emacs.git/commit/?h=emacs-25&id=9ad0fcc54442a9a01d41be19880250783426db70
+Patch28:        emacs-enriched.patch
 # Fix for emacs bug #13460.
 Patch100:       emacs-24.3-hunspell.patch
 # Fix for emacs bug #827033
@@ -203,6 +205,7 @@ packages that add functionality to Emacs.
 %patch25 -p1
 %patch26 -p1
 %patch27 -p1
+%patch28 -p1
 
 %patch100 -p1 -b .hunspell
 %patch101 -p1 -b .hunspell.2
@@ -507,6 +510,9 @@ update-desktop-database &> /dev/null || :
 %dir %{_datadir}/emacs/site-lisp/site-start.d
 
 %changelog
+* Tue Sep 12 2017 Jan Synáček <jsynacek@redhat.com> - 1:24.3-20
+- fix unsafe enriched mode translations (#1490452)
+
 * Fri Jan  6 2017 Jan Synáček <jsynacek@redhat.com> - 1:24.3-19
 - fix build failure on ppc64 (#1336711)
 - fix emacs crashes (#1308518)
