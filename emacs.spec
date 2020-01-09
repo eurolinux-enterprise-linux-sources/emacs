@@ -4,7 +4,7 @@ Summary: GNU Emacs text editor
 Name: emacs
 Epoch: 1
 Version: 23.1
-Release: 21%{?dist}
+Release: 21%{?dist}.1
 License: GPLv3+
 URL: http://www.gnu.org/software/emacs/
 Group: Applications/Editors
@@ -42,6 +42,7 @@ Patch11: emacs-23.1-spacing.patch
 # Size already changed in upstream
 Patch12: emacs-23.1-defaultfont.patch
 Patch13: emacs-23.1-jis2004.patch
+Patch14: emacs-23.1-last-tty.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: atk-devel, cairo-devel, desktop-file-utils, freetype-devel, fontconfig-devel, dbus-devel, giflib-devel, glibc-devel, gtk2-devel, libpng-devel
@@ -142,6 +143,7 @@ Emacs packages or see some elisp examples.
 %patch11 -p1 -b .spacing
 %patch12 -p1 -b .defaultfont
 %patch13 -p1 -b .jis2004
+%patch14 -p1 -b .last-tty
 
 # install rest of site-lisp files
 ( cd site-lisp
@@ -404,6 +406,10 @@ alternatives --install %{_bindir}/etags emacs.etags %{_bindir}/etags.emacs 80 \
 %dir %{_datadir}/emacs/%{version}
 
 %changelog
+* Wed Dec 21 2011 Karel Klíč <kklic@redhat.com> - 1:23.1-21.1
+- Remove check for last terminal
+  Resolves: #769673
+
 * Wed Feb  2 2011 Karel Klic <kklic@redhat.com> 1:23.1-21
 - Added jis2004 patch to prefer non-JIS X 0213:2004 compliant fonts
   for Japanese texts (IPA fonts are counted as JIS X 0213:2004
