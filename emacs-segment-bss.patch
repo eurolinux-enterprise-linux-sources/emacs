@@ -1,0 +1,20 @@
+diff --git a/src/unexelf.c b/src/unexelf.c
+index d365940..f78f85a 100644
+--- a/src/unexelf.c
++++ b/src/unexelf.c
+@@ -717,7 +717,14 @@ unexec (const char *new_name, const char *old_name)
+   old_plt_index = find_section (".plt", old_section_names,
+ 				old_name, old_file_h, old_section_h, 1);
+   if (old_plt_index != -1)
+-    if (OLD_SECTION_H (old_plt_index).sh_type != SHT_NOBITS)
++    if (OLD_SECTION_H (old_plt_index).sh_type != SHT_NOBITS
++       || ((OLD_SECTION_H (old_plt_index).sh_addr
++            + OLD_SECTION_H (old_plt_index).sh_size
++            != OLD_SECTION_H (old_bss_index).sh_addr)
++           && (old_sbss_index == -1
++               || (OLD_SECTION_H (old_plt_index).sh_addr
++                   + OLD_SECTION_H (old_plt_index).sh_size
++                   != OLD_SECTION_H (old_sbss_index).sh_addr))))
+       old_plt_index = -1;
+ 
+   if (old_sbss_index == -1 && old_plt_index == -1)

@@ -1,68 +1,73 @@
+%undefine _hardened_build
 # This file is encoded in UTF-8.  -*- coding: utf-8 -*-
-Summary: GNU Emacs text editor
-Name: emacs
-Epoch: 1
-Version: 24.3
-Release: 11%{?dist}
-License: GPLv3+
-URL: http://www.gnu.org/software/emacs/
-Group: Applications/Editors
-Source0: ftp://ftp.gnu.org/gnu/emacs/emacs-%{version}.tar.xz
-Source1: emacs.desktop
-Source2: emacsclient.desktop
-Source3: dotemacs.el
-Source4: site-start.el
-Source5: default.el
+Summary:        GNU Emacs text editor
+Name:           emacs
+Epoch:          1
+Version:        24.3
+Release:        18%{?dist}
+License:        GPLv3+
+URL:            http://www.gnu.org/software/emacs/
+Group:          Applications/Editors
+Source0:        ftp://ftp.gnu.org/gnu/emacs/emacs-%{version}.tar.xz
+Source1:        emacs.desktop
+Source2:        emacsclient.desktop
+Source3:        dotemacs.el
+Source4:        site-start.el
+Source5:        default.el
 # Emacs Terminal Mode, #551949, #617355
-Source6: emacs-terminal.desktop
-Source7: emacs-terminal.sh
+Source6:        emacs-terminal.desktop
+Source7:        emacs-terminal.sh
 # rhbz#713600
-Patch7: emacs-spellchecker.patch
-# rhbz#830162, fixed in org-mode upstream
-#Patch8: emacs-locate-library.patch
-# Fix for Emacs bug #111500.
-#Patch9: emacs-bz11580-eudc-bbdb.patch
+Patch7:         emacs-spellchecker.patch
 # Fix for emacs bug #922519
-Patch10: emacs-style-change-cb.patch
+Patch10:        emacs-style-change-cb.patch
 # Fix for emacs bug #562719
-Patch11: emacs-bell-dont-work.patch
+Patch11:        emacs-bell-dont-work.patch
 # Fix for emacs bug #929353
-Patch12: emacs-gtk-warning.patch
+Patch12:        emacs-gtk-warning.patch
 # Fix for emacs bug #948838
-Patch13: emacs-help-update.patch
+Patch13:        emacs-help-update.patch
+# Fix for emacs counts used memory incorrectly #107836
+Patch14:        emacs-remove-memory-warning.patch
+# Fix for emacs building under ppc64le
+Patch15:        emacs-segment-bss.patch
 # Fix for emacs bug #13460.
-Patch100: emacs-24.3-hunspell.patch
+Patch100:       emacs-24.3-hunspell.patch
 # Fix for emacs bug #827033
-Patch101: emacs-24.3-hunspell.2.patch
+Patch101:       emacs-24.3-hunspell.2.patch
 
-BuildRequires: atk-devel cairo-devel freetype-devel fontconfig-devel dbus-devel giflib-devel glibc-devel libpng-devel
-BuildRequires: libjpeg-devel libtiff-devel libX11-devel libXau-devel libXdmcp-devel libXrender-devel libXt-devel
-BuildRequires: libXpm-devel ncurses-devel xorg-x11-proto-devel zlib-devel gnutls-devel
-BuildRequires: librsvg2-devel m17n-lib-devel libotf-devel ImageMagick-devel libselinux-devel
-BuildRequires: GConf2-devel alsa-lib-devel gpm-devel liblockfile-devel libxml2-devel
-BuildRequires: bzip2 cairo texinfo gzip desktop-file-utils
+
+BuildRequires:  atk-devel cairo-devel freetype-devel fontconfig-devel dbus-devel giflib-devel glibc-devel libpng-devel
+BuildRequires:  libjpeg-devel libtiff-devel libX11-devel libXau-devel libXdmcp-devel libXrender-devel libXt-devel
+BuildRequires:  libXpm-devel ncurses-devel xorg-x11-proto-devel zlib-devel gnutls-devel
+BuildRequires:  librsvg2-devel m17n-lib-devel libotf-devel ImageMagick-devel libselinux-devel
+BuildRequires:  GConf2-devel alsa-lib-devel gpm-devel liblockfile-devel libxml2-devel
+BuildRequires:  bzip2 cairo texinfo gzip desktop-file-utils
 %if 0%{?rhel} == 6
-BuildRequires: gtk2-devel
+BuildRequires:  gtk2-devel
 %else
 %if 0%{?rhel} == 7
-BuildRequires: gtk3-devel python2-devel 
+BuildRequires:  gtk3-devel
+BuildRequires:  python2-devel 
 # Buildrequire both python2 and python3 on systems containing both,
 # since below we turn off the brp-python-bytecompile script
 %else
-BuildRequires: gtk3-devel python2-devel python3-devel
+BuildRequires:  gtk3-devel
+BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 %endif
 %endif
 
 %ifarch %{ix86}
-BuildRequires: util-linux
+BuildRequires:  util-linux
 %endif
 
 # Emacs doesn't run without dejavu-sans-mono-fonts, rhbz#732422
-Requires: desktop-file-utils dejavu-sans-mono-fonts
+Requires:       desktop-file-utils dejavu-sans-mono-fonts
 Requires(preun): %{_sbindir}/alternatives
 Requires(posttrans): %{_sbindir}/alternatives
-Requires: emacs-common = %{epoch}:%{version}-%{release}
-Provides: emacs(bin) = %{epoch}:%{version}-%{release}
+Requires:       emacs-common = %{epoch}:%{version}-%{release}
+Provides:       emacs(bin) = %{epoch}:%{version}-%{release}
 
 %if 0%{!?rhel:1}
 # Turn off the brp-python-bytecompile script since this script doesn't
@@ -94,7 +99,7 @@ This package provides an emacs binary with support for X windows.
 
 %package nox
 Summary: GNU Emacs text editor without X support
-Group: Applications/Editors
+Group:   Applications/Editors
 Requires(preun): %{_sbindir}/alternatives
 Requires(posttrans): %{_sbindir}/alternatives
 Requires: emacs-common = %{epoch}:%{version}-%{release}
@@ -173,9 +178,31 @@ packages that add functionality to Emacs.
 %patch11 -p1 -b .bell-dont-work.patch
 %patch12 -p1 -b .gtk-warning.patch
 %patch13 -p1 -b .help-update.patch
+%patch14 -p1 -b .remove-warning.patch
+%patch15 -p1 -b .segment
 
 %patch100 -p1 -b .hunspell
 %patch101 -p1 -b .hunspell.2
+if test configure.ac -nt aclocal.m4 -o m4/gnulib-comp.m4 -nt aclocal.m4 ; then
+    sleep 1
+    touch aclocal.m4
+fi
+if test configure.ac -nt configure -o aclocal.m4 -nt configure ; then
+    sleep 1
+    touch configure
+fi
+if test configure.ac -nt src/stamp-h.in -o aclocal.m4 -nt src/stamp-h.in ; then
+    sleep 1
+    touch src/stamp-h.in
+fi
+if test aclocal.m4 -nt lib/Makefile.in -o lib/Makefile.am -nt lib/Makefile.in -o lib/gnulib.mk -nt lib/Makefile.in ; then
+    sleep 1
+    touch lib/Makefile.in
+fi
+if test -s autogen.sh ; then
+    mv autogen.sh autogen.sh.no
+    ln -sf /bin/true autogen.sh
+fi
 
 # We prefer our emacs.desktop file
 cp %SOURCE1 etc/emacs.desktop
@@ -192,14 +219,16 @@ rm -f lisp/play/tetris.el lisp/play/tetris.elc
 rm -f etc/sex.6 etc/condom.1 etc/celibacy.1 etc/COOKIES etc/future-bug etc/JOKES
 %endif
 
-%define info_files ada-mode auth autotype bovine calc ccmode cl dbus dired-x ebrowse ede ediff edt efaq eieio eintr elisp emacs-gnutls emacs-mime emacs epa erc ert eshell eudc flymake forms gnus htmlfontify idlwave info mairix-el message mh-e newsticker nxml-mode org pcl-cvs pgg rcirc reftex remember sasl sc semantic ses sieve smtpmail speedbar srecode tramp url vip viper widget wisent woman
+info_files="ada-mode auth autotype bovine calc ccmode cl dbus dired-x ebrowse ede ediff edt efaq eieio eintr elisp emacs-gnutls emacs-mime emacs epa erc ert eshell eudc flymake forms gnus htmlfontify idlwave info mairix-el message mh-e newsticker nxml-mode org pcl-cvs pgg rcirc reftex remember sasl sc semantic ses sieve smtpmail speedbar srecode tramp url vip viper widget wisent woman"
 
 cd info
-files=`echo $(ls *.info) | sed 's/\.info//'g | sort | tr -d '\n'`
-if test "$files" != "%info_files"; then
-  echo Please update info_files >&2
-  exit 1
-fi
+for f in $(ls -1 *.info); do
+  f=`echo $f | sed 's/\.info//g'`
+  if [ ! -z "${info_files##*$f*}" ] ;then
+      echo Please update info_files. $f is missing.>&2
+      exit 1
+  fi
+done
 cd ..
 
 %ifarch %{ix86}
@@ -219,11 +248,12 @@ rm lisp/textmodes/ispell.el.hunspell
 rm lisp/textmodes/ispell.el.hunspell.2
 rm lisp/textmodes/ispell.el.spellchecker
 
+# don't compile with -O2 on arm, it can lead to segfault
+%ifarch aarch64
+export CFLAGS="-DMAIL_USE_LOCKF $RPM_OPT_FLAGS -O0"
+%else
 export CFLAGS="-DMAIL_USE_LOCKF $RPM_OPT_FLAGS"
-
-# Build GTK+ binary
-mkdir build-gtk && cd build-gtk
-ln -s ../configure .
+%endif
 
 %if 0%{?rhel} == 6
 %define toolkit gtk
@@ -235,17 +265,12 @@ ln -s ../configure .
            --with-tiff --with-xft --with-xpm --with-x-toolkit=%{toolkit} --with-gpm=no
 make bootstrap
 %{setarch} make %{?_smp_mflags}
-cd ..
+cp src/emacs emacs-gtk
+make distclean
 
-# Build binary without X support
-mkdir build-nox && cd build-nox
-ln -s ../configure .
 %configure --with-x=no
 %{setarch} make %{?_smp_mflags}
-cd ..
-
-# Remove versioned file so that we end up with .1 suffix and only one DOC file
-rm build-{gtk,nox}/src/emacs-%{version}.*
+cp src/emacs emacs-nox
 
 # Create pkgconfig file
 cat > emacs.pc << EOF
@@ -268,9 +293,7 @@ cat > macros.emacs << EOF
 EOF
 
 %install
-cd build-gtk
 make install INSTALL="%{__install} -p" DESTDIR=%{buildroot}
-cd ..
 
 # Let alternatives manage the symlink
 rm %{buildroot}%{_bindir}/emacs
@@ -280,8 +303,11 @@ touch %{buildroot}%{_bindir}/emacs
 gunzip %{buildroot}%{_datadir}/emacs/%{version}/lisp/jka-compr.el.gz
 gunzip %{buildroot}%{_datadir}/emacs/%{version}/lisp/jka-cmpr-hook.el.gz
 
+# Install the emacs with GTK support
+install -p -m 1755 emacs-gtk %{buildroot}%{_bindir}/emacs-%{version}
+
 # Install the emacs without X
-install -p -m 0755 build-nox/src/emacs %{buildroot}%{_bindir}/emacs-%{version}-nox
+install -p -m 0755 emacs-nox %{buildroot}%{_bindir}/emacs-%{version}-nox
 
 # Make sure movemail isn't setgid
 chmod 755 %{buildroot}%{emacs_libexecdir}/movemail
@@ -389,14 +415,14 @@ fi
 
 %post common
 for f in %{info_files}; do
-  /sbin/install-info %{_infodir}/$f %{_infodir}/dir 2> /dev/null || :
+  /sbin/install-info %{_infodir}/$f.info.gz %{_infodir}/dir 2> /dev/null || :
 done
 
 %preun common
 %{_sbindir}/alternatives --remove emacs.etags %{_bindir}/etags.emacs
 if [ "$1" = 0 ]; then
   for f in %{info_files}; do
-    /sbin/install-info --delete %{_infodir}/$f %{_infodir}/dir 2> /dev/null || :
+    /sbin/install-info --delete %{_infodir}/$f.info.gz %{_infodir}/dir 2> /dev/null || :
   done
 fi
 
@@ -458,6 +484,33 @@ update-desktop-database &> /dev/null || :
 %dir %{_datadir}/emacs/site-lisp/site-start.d
 
 %changelog
+* Wed Oct 07 2015 Petr Hracek <phracek@redhat.com> - 1:24.3-18
+- Fix for sbit on emacs binary
+- Related: #1223033
+
+* Wed Oct 07 2015 Petr Hracek <phracek@redhat.com> - 1:24.3-17
+- emacs on ppc64le fails to build from source when RELRO is enabled
+- Related: #1223033
+
+* Fri Sep 18 2015 Petr Hracek <phracek@redhat.com> - 1:24.3-16
+- emacs on ppc64le fails to build from source when RELRO is enabled
+- Resolves: #1223033
+
+* Tue Sep 15 2015 Petr Hracek <phracek@redhat.com> - 1:24.3-15
+- Updated texts in patch and SPEC file
+- Resolves: #1223033
+
+* Wed Jul 15 2015 Petr Hracek <phracek@redhat.com> - 1:24.3-14
+- texinfo not reading all of /usr/share/info content
+- Resolves: #1192538
+
+* Thu May 21 2015 Petr Hracek <phracek@redhat.com> - 1:24.3-13
+- Resolves: #1077836 emacs counts used memory incorrectly
+
+* Thu Oct 23 2014 jchaloup <jchaloup@redhat.com> - 1:24.3-12
+- Disable opmitization for arm architecture
+  resolves: #1155952
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 1:24.3-11
 - Mass rebuild 2014-01-24
 
