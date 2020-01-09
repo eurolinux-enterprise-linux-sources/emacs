@@ -4,7 +4,7 @@ Summary:        GNU Emacs text editor
 Name:           emacs
 Epoch:          1
 Version:        24.3
-Release:        20%{?dist}
+Release:        22%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/emacs/
 Group:          Applications/Editors
@@ -45,6 +45,12 @@ Patch26:        emacs-0011-ELF-unexec-align-section-header.patch
 Patch27:        emacs-environment-crash.patch
 # https://git.savannah.gnu.org/cgit/emacs.git/commit/?h=emacs-25&id=9ad0fcc54442a9a01d41be19880250783426db70
 Patch28:        emacs-enriched.patch
+Patch29:        emacs-jpeg-detection.patch
+# https://github.com/emacs-mirror/emacs/commit/3f4c6d52d345999938bc2d4a53246af4c61ef176
+# and part of https://github.com/emacs-mirror/emacs/commit/5a1d858bbc5410916d764e7f9c62b4e405fab592
+Patch30:        emacs-menu.patch
+Patch31:        emacs-0012-New-verify-error-GnuTLS-interface-for-certificate-va.patch
+Patch32:        emacs-0013-gnutls.el-increase-gnutls-min-prime-bits-to-1024-by-.patch
 # Fix for emacs bug #13460.
 Patch100:       emacs-24.3-hunspell.patch
 # Fix for emacs bug #827033
@@ -206,6 +212,10 @@ packages that add functionality to Emacs.
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
 
 %patch100 -p1 -b .hunspell
 %patch101 -p1 -b .hunspell.2
@@ -510,8 +520,16 @@ update-desktop-database &> /dev/null || :
 %dir %{_datadir}/emacs/site-lisp/site-start.d
 
 %changelog
+* Tue Sep 11 2018 Jan Synáček <jsynacek@redhat.com> - 1:24.3-22
+- refix: TLS certificate warnings should be hard errors (#1403643)
+
+* Thu Jun  7 2018 Jan Synáček <jsynacek@redhat.com> - 1:24.3-21
+- fix libjpeg detection fails with gcc7 (#1487557)
+- fix Emacs GUI Toolbar icons missing (#1477745)
+- fix hardening: TLS certificate warnings should be hard errors (#1403643)
+
 * Tue Sep 12 2017 Jan Synáček <jsynacek@redhat.com> - 1:24.3-20
-- fix unsafe enriched mode translations (#1490452)
+- fix unsafe enriched mode translations (#1490451)
 
 * Fri Jan  6 2017 Jan Synáček <jsynacek@redhat.com> - 1:24.3-19
 - fix build failure on ppc64 (#1336711)
