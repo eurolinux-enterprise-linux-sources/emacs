@@ -4,7 +4,7 @@ Summary:        GNU Emacs text editor
 Name:           emacs
 Epoch:          1
 Version:        24.3
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/emacs/
 Group:          Applications/Editors
@@ -30,7 +30,19 @@ Patch13:        emacs-help-update.patch
 # Fix for emacs counts used memory incorrectly #107836
 Patch14:        emacs-remove-memory-warning.patch
 # Fix for emacs building under ppc64le
-Patch15:        emacs-segment-bss.patch
+Patch16:        emacs-0001-ppc64-fixes-prepatch.patch
+Patch17:        emacs-0002-ELF-unexec-Correct-section-header-index.patch
+Patch18:        emacs-0003-ELF-unexec-Tidy-code.patch
+Patch19:        emacs-0004-ELF-unexec-Merge-Alpha-and-MIPS-COFF-debug-handling.patch
+Patch20:        emacs-0005-ELF-unexec-Symbol-table-patching.patch
+Patch21:        emacs-0006-ELF-unexec-_OBJC_-symbols-in-bss-sections.patch
+Patch22:        emacs-0007-ELF-unexec-R_-_NONE-relocs.patch
+Patch23:        emacs-0008-ELF-unexec-Drive-from-PT_LOAD-header-rather-than-sec.patch
+Patch24:        emacs-0009-ELF-unexec-Don-t-insert-a-new-section.patch
+Patch25:        emacs-0010-src-unexelf.c-NEW_PROGRAM_H-Remove-unused-macro-Bug-.patch
+Patch26:        emacs-0011-ELF-unexec-align-section-header.patch
+# Fix for #1308518, upstreamed
+Patch27:        emacs-environment-crash.patch
 # Fix for emacs bug #13460.
 Patch100:       emacs-24.3-hunspell.patch
 # Fix for emacs bug #827033
@@ -179,7 +191,18 @@ packages that add functionality to Emacs.
 %patch12 -p1 -b .gtk-warning.patch
 %patch13 -p1 -b .help-update.patch
 %patch14 -p1 -b .remove-warning.patch
-%patch15 -p1 -b .segment
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
 
 %patch100 -p1 -b .hunspell
 %patch101 -p1 -b .hunspell.2
@@ -484,6 +507,10 @@ update-desktop-database &> /dev/null || :
 %dir %{_datadir}/emacs/site-lisp/site-start.d
 
 %changelog
+* Fri Jan  6 2017 Jan Synáček <jsynacek@redhat.com> - 1:24.3-19
+- fix build failure on ppc64 (#1336711)
+- fix emacs crashes (#1308518)
+
 * Wed Oct 07 2015 Petr Hracek <phracek@redhat.com> - 1:24.3-18
 - Fix for sbit on emacs binary
 - Related: #1223033
